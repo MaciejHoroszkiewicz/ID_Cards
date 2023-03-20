@@ -15,8 +15,8 @@ class BaseContact:
     def label_length(self):
          return len(self.name) + len(self.last_name) + 1
 
-    #def __str__(self):
-	    #return f"{self.name} {self.last_name} {self.email}"
+    def __str__(self):
+	    return f"{self.name} {self.last_name} {self.email}"
     
 class BusinessContact(BaseContact):
      def __init__(self, job, company_name, work_phone, *args, **kwargs):
@@ -25,33 +25,24 @@ class BusinessContact(BaseContact):
          self.company_name = company_name
          self.work_phone = work_phone
 
-def create_contacts(type, count):
-    contacts = []
-    for i in range(count):
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        email = fake.email()
-        if type == "base":
-            phone = fake.phone_number()
-            contact = BaseContact(first_name, last_name, phone, email)
-        elif type == "business":
-            job = fake.job()
-            company_name = fake.company()
-            work_phone = fake.phone_number()
-            contact = BusinessContact(job, company_name, work_phone, first_name, last_name, fake.phone_number(), email)
-        contacts.append(contact)
-    return contacts
+def create_contacts(count):
+    names = [(fake.first_name(), fake.last_name(), fake.email()) for i in range(count)]
+    base_contacts = [BaseContact(name, last_name, fake.phone_number(), email) for name, last_name, email in names]
+    business_contacts = [BusinessContact(fake.job(), fake.company(), fake.phone_number(), name, last_name, fake.phone_number(), email) for name, last_name, email in names]
+    return base_contacts, business_contacts
 
-base_contacts = create_contacts("base", 3)
-business_contacts = create_contacts("business", 3)
+base_contacts, business_contacts = create_contacts(2)
+
 
 #by_lastname_private = sorted(base_contacts, key=lambda person: person.last_name)
 #by_lastname_work = sorted(business_contacts, key=lambda person: person.last_name)
 
 for card in base_contacts:
+    print(card)
     card.contact()
-    print(card.label_length)
+    print("")
 
 for card in business_contacts:
+    print(f"{card}; {card.company_name}")
     card.contact()
-    print(card.label_length)
+    print("")
